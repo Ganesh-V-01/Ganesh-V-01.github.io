@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f5f7fa">
+  <meta name="description" content="ganeshv.me is currently being designed and built.">
+  <title>ganeshv.me</title>
+
+  <style>
+    :root {
+      --page: #f5f7fa;
+      --paper: #ffffff;
+      --ink: #1f2937;
+      --muted: #8b96a7;
+      --line: #dce2e9;
+      --line-soft: #e9edf2;
+      --blue: #4f7cff;
+      --blue-soft: #dfe7ff;
+      --shadow: 0 24px 70px rgba(31, 41, 55, 0.11);
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(rgba(79,124,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,124,255,.035) 1px, transparent 1px),
+        var(--page);
+      background-size: 32px 32px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+    }
+
+    .scene {
+      position: relative;
+      width: min(92vw, 1040px);
+      height: min(84svh, 720px);
+      display: grid;
+      place-items: center;
+      perspective: 1200px;
+      isolation: isolate;
+    }
+
+    .scene::before {
+      content: "";
+      position: absolute;
+      width: 68%;
+      height: 36%;
+      left: 50%;
+      bottom: 6%;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse, rgba(31,41,55,.12), transparent 70%);
+      filter: blur(22px);
+      z-index: -1;
+    }
+
+    .workspace {
+      position: relative;
+      width: min(84vw, 820px);
+      aspect-ratio: 1.52 / 1;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform .2s ease-out;
+    }
+
+    .topbar {
+      height: 12%;
+      display: flex;
+      align-items: center;
+      padding: 0 4.5%;
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(255,255,255,.94);
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .window-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #c8d0da;
+    }
+
+    .address {
+      width: 36%;
+      height: 10px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 999px;
+      background: #edf1f5;
+    }
+
+    .canvas {
+      position: relative;
+      height: 88%;
+      overflow: hidden;
+    }
+
+    .design-grid {
+      position: absolute;
+      inset: 0;
+      opacity: .55;
+      background:
+        linear-gradient(var(--line-soft) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+      background-size: 7.8% 12%;
+      mask-image: linear-gradient(to bottom, black 0 82%, transparent 100%);
+    }
+
+    .frame {
+      position: absolute;
+      left: 12%;
+      top: 14%;
+      width: 76%;
+      height: 66%;
+      border: 1px dashed #cbd3dd;
+      border-radius: 18px;
+      animation: framePulse 18s ease-in-out infinite;
+    }
+
+    .measure-h,
+    .measure-v {
+      position: absolute;
+      opacity: .7;
+    }
+
+    .measure-h {
+      left: 12%;
+      top: 8%;
+      width: 76%;
+      height: 12px;
+      border-top: 1px solid #cfd6df;
+    }
+
+    .measure-v {
+      left: 7%;
+      top: 14%;
+      width: 12px;
+      height: 66%;
+      border-left: 1px solid #cfd6df;
+    }
+
+    .measure-h::before,
+    .measure-h::after,
+    .measure-v::before,
+    .measure-v::after {
+      content: "";
+      position: absolute;
+      background: #cfd6df;
+    }
+
+    .measure-h::before,
+    .measure-h::after {
+      width: 1px;
+      height: 8px;
+      top: -4px;
+    }
+
+    .measure-h::before { left: 0; }
+    .measure-h::after { right: 0; }
+
+    .measure-v::before,
+    .measure-v::after {
+      width: 8px;
+      height: 1px;
+      left: -4px;
+    }
+
+    .measure-v::before { top: 0; }
+    .measure-v::after { bottom: 0; }
+
+    .module {
+      position: absolute;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: 0 8px 20px rgba(31,41,55,.06);
+      opacity: 0;
+      transform: translateY(24px) scale(.96);
+      animation: assemble 18s cubic-bezier(.2,.75,.25,1) infinite;
+    }
+
+    .module::before,
+    .module::after {
+      content: "";
+      position: absolute;
+      left: 12%;
+      border-radius: 999px;
+      background: #dfe4ea;
+    }
+
+    .module::before {
+      top: 20%;
+      width: 48%;
+      height: 8px;
+    }
+
+    .module::after {
+      top: 43%;
+      width: 68%;
+      height: 6px;
+    }
+
+    .hero {
+      left: 17%;
+      top: 21%;
+      width: 42%;
+      height: 22%;
+      animation-delay: .8s;
+    }
+
+    .hero .accent {
+      position: absolute;
+      left: 12%;
+      bottom: 16%;
+      width: 34%;
+      height: 11px;
+      border-radius: 999px;
+      background: var(--blue);
+      box-shadow: 0 0 0 5px var(--blue-soft);
+    }
+
+    .image-card {
+      right: 17%;
+      top: 21%;
+      width: 18%;
+      height: 22%;
+      animation-delay: 1.7s;
+      overflow: hidden;
+    }
+
+    .image-card::before {
+      left: 17%;
+      top: 18%;
+      width: 66%;
+      height: 46%;
+      border-radius: 10px;
+      background:
+        linear-gradient(135deg, #e7ecf2 50%, #dce4ec 50%);
+    }
+
+    .image-card::after {
+      left: 17%;
+      top: auto;
+      bottom: 15%;
+      width: 45%;
+      height: 6px;
+    }
+
+    .left-card {
+      left: 17%;
+      top: 51%;
+      width: 28%;
+      height: 20%;
+      animation-delay: 2.6s;
+    }
+
+    .center-card {
+      left: 48%;
+      top: 51%;
+      width: 19%;
+      height: 20%;
+      animation-delay: 3.4s;
+    }
+
+    .right-card {
+      right: 17%;
+      top: 51%;
+      width: 13%;
+      height: 20%;
+      animation-delay: 4.2s;
+    }
+
+    .right-card::before {
+      width: 30%;
+      height: 30%;
+      top: 18%;
+      left: 35%;
+      border-radius: 50%;
+      background: var(--blue-soft);
+      border: 1px solid #c9d6ff;
+    }
+
+    .right-card::after {
+      width: 54%;
+      left: 23%;
+      top: auto;
+      bottom: 18%;
+    }
+
+    .tool {
+      position: absolute;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid #cad2dc;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(31,41,55,.10);
+      z-index: 8;
+      animation: toolMove 18s cubic-bezier(.65,0,.35,1) infinite;
+    }
+
+    .tool::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 13px;
+      height: 13px;
+      transform: translate(-50%,-50%) rotate(45deg);
+      border-right: 2px solid var(--blue);
+      border-bottom: 2px solid var(--blue);
+    }
+
+    .tool::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 74px;
+      height: 1px;
+      transform-origin: left center;
+      background: linear-gradient(90deg, rgba(79,124,255,.55), transparent);
+      animation: guideRotate 18s ease-in-out infinite;
+    }
+
+    .scan {
+      position: absolute;
+      left: 12%;
+      top: 14%;
+      width: 76%;
+      height: 2px;
+      opacity: 0;
+      z-index: 7;
+      background: linear-gradient(90deg, transparent, var(--blue), transparent);
+      box-shadow: 0 0 12px rgba(79,124,255,.28);
+      animation: scanPass 18s ease-in-out infinite;
+    }
+
+    .node {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #bfc8d4;
+      z-index: 9;
+      animation: nodePulse 18s ease-in-out infinite;
+    }
+
+    .n1 { left: 12%; top: 14%; }
+    .n2 { right: 12%; top: 14%; animation-delay: .4s; }
+    .n3 { left: 12%; bottom: 20%; animation-delay: .8s; }
+    .n4 { right: 12%; bottom: 20%; animation-delay: 1.2s; }
+    .n5 { left: 49%; top: 47%; animation-delay: 1.6s; }
+
+    .reject {
+      position: absolute;
+      right: 16%;
+      top: 50%;
+      width: 14%;
+      height: 21%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      opacity: 0;
+      box-shadow: 0 8px 20px rgba(31,41,55,.05);
+      animation: rejectModule 18s ease-in-out infinite;
+    }
+
+    .reject::before,
+    .reject::after {
+      content: "";
+      position: absolute;
+      left: 16%;
+      border-radius: 999px;
+      background: #dfe4ea;
+    }
+
+    .reject::before {
+      top: 22%;
+      width: 50%;
+      height: 7px;
+    }
+
+    .reject::after {
+      top: 45%;
+      width: 66%;
+      height: 6px;
+    }
+
+    .cursor-shadow {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(circle, rgba(79,124,255,.08), transparent 70%);
+      transform: translate(-50%,-50%);
+      transition: left .12s linear, top .12s linear;
+    }
+
+    .status-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 7%;
+      display: flex;
+      gap: 8px;
+      transform: translateX(-50%);
+    }
+
+    .status-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #cbd3dd;
+      animation: dotFlow 2.4s ease-in-out infinite;
+    }
+
+    .status-dots span:nth-child(2) { animation-delay: .25s; }
+    .status-dots span:nth-child(3) { animation-delay: .5s; }
+
+    @keyframes assemble {
+      0%, 10% {
+        opacity: 0;
+        transform: translateY(24px) scale(.96);
+      }
+      18%, 68% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      78%, 100% {
+        opacity: .22;
+        transform: translateY(0) scale(.985);
+      }
+    }
+
+    @keyframes framePulse {
+      0%, 7% { opacity: .25; transform: scale(.985); }
+      16%, 76% { opacity: 1; transform: scale(1); }
+      88%, 100% { opacity: .34; transform: scale(.985); }
+    }
+
+    @keyframes toolMove {
+      0%   { left: 13%; top: 17%; transform: rotate(0deg); }
+      14%  { left: 54%; top: 24%; transform: rotate(8deg); }
+      28%  { left: 75%; top: 31%; transform: rotate(-6deg); }
+      42%  { left: 38%; top: 58%; transform: rotate(5deg); }
+      56%  { left: 63%; top: 61%; transform: rotate(-4deg); }
+      70%  { left: 78%; top: 56%; transform: rotate(10deg); }
+      84%  { left: 49%; top: 36%; transform: rotate(0deg); }
+      100% { left: 13%; top: 17%; transform: rotate(0deg); }
+    }
+
+    @keyframes guideRotate {
+      0%, 100% { transform: translateY(-50%) rotate(18deg); opacity: .55; }
+      28% { transform: translateY(-50%) rotate(128deg); opacity: .25; }
+      56% { transform: translateY(-50%) rotate(208deg); opacity: .55; }
+      84% { transform: translateY(-50%) rotate(318deg); opacity: .25; }
+    }
+
+    @keyframes scanPass {
+      0%, 50% { opacity: 0; transform: translateY(0); }
+      56% { opacity: 1; }
+      72% { opacity: .8; transform: translateY(260px); }
+      76%, 100% { opacity: 0; transform: translateY(260px); }
+    }
+
+    @keyframes rejectModule {
+      0%, 54% {
+        opacity: 0;
+        transform: translate(0, 18px) rotate(0);
+      }
+      60%, 69% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0);
+      }
+      76%, 86% {
+        opacity: .7;
+        transform: translate(90px, -34px) rotate(8deg);
+      }
+      90%, 100% {
+        opacity: 0;
+        transform: translate(120px, -46px) rotate(12deg);
+      }
+    }
+
+    @keyframes nodePulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(79,124,255,0);
+        border-color: #bfc8d4;
+      }
+      45% {
+        box-shadow: 0 0 0 7px rgba(79,124,255,.08);
+        border-color: var(--blue);
+      }
+    }
+
+    @keyframes dotFlow {
+      0%, 100% { transform: translateY(0); background: #cbd3dd; }
+      50% { transform: translateY(-4px); background: var(--blue); }
+    }
+
+    @media (max-width: 700px) {
+      body {
+        background-size: 24px 24px;
+      }
+
+      .scene {
+        width: 100vw;
+        height: 100svh;
+      }
+
+      .workspace {
+        width: 92vw;
+        aspect-ratio: .82 / 1;
+        border-radius: 22px;
+      }
+
+      .topbar {
+        height: 9%;
+      }
+
+      .canvas {
+        height: 91%;
+      }
+
+      .frame {
+        left: 10%;
+        top: 11%;
+        width: 80%;
+        height: 72%;
+      }
+
+      .measure-h {
+        left: 10%;
+        top: 6%;
+        width: 80%;
+      }
+
+      .measure-v {
+        left: 5%;
+        top: 11%;
+        height: 72%;
+      }
+
+      .hero {
+        left: 15%;
+        top: 17%;
+        width: 70%;
+        height: 18%;
+      }
+
+      .image-card {
+        left: 15%;
+        right: auto;
+        top: 40%;
+        width: 31%;
+        height: 19%;
+      }
+
+      .left-card {
+        left: 51%;
+        top: 40%;
+        width: 34%;
+        height: 19%;
+      }
+
+      .center-card {
+        left: 15%;
+        top: 64%;
+        width: 34%;
+        height: 14%;
+      }
+
+      .right-card {
+        right: 15%;
+        top: 64%;
+        width: 31%;
+        height: 14%;
+      }
+
+      .reject {
+        right: 15%;
+        top: 64%;
+        width: 31%;
+        height: 14%;
+      }
+
+      .tool {
+        width: 36px;
+        height: 36px;
+      }
+
+      .scan {
+        left: 10%;
+        top: 11%;
+        width: 80%;
+      }
+
+      @keyframes toolMove {
+        0%   { left: 12%; top: 14%; }
+        18%  { left: 62%; top: 18%; }
+        36%  { left: 23%; top: 44%; }
+        54%  { left: 62%; top: 46%; }
+        72%  { left: 22%; top: 68%; }
+        88%  { left: 62%; top: 68%; }
+        100% { left: 12%; top: 14%; }
+      }
+
+      @keyframes scanPass {
+        0%, 50% { opacity: 0; transform: translateY(0); }
+        56% { opacity: 1; }
+        72% { opacity: .8; transform: translateY(420px); }
+        76%, 100% { opacity: 0; transform: translateY(420px); }
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+      }
+
+      .module,
+      .reject {
+        opacity: 1;
+        transform: none;
+      }
+
+      .reject {
+        display: none;
+      }
+
+      .scan,
+      .tool::after,
+      .status-dots {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="scene" aria-label="A clean digital workspace showing a website being assembled">
+    <section class="workspace" aria-hidden="true">
+      <div class="topbar">
+        <div class="window-dots"><span></span><span></span><span></span></div>
+        <div class="address"></div>
+      </div>
+
+      <div class="canvas">
+        <div class="design-grid"></div>
+        <div class="measure-h"></div>
+        <div class="measure-v"></div>
+        <div class="frame"></div>
+
+        <div class="module hero"><span class="accent"></span></div>
+        <div class="module image-card"></div>
+        <div class="module left-card"></div>
+        <div class="module center-card"></div>
+        <div class="module right-card"></div>
+
+        <div class="reject"></div>
+        <div class="scan"></div>
+        <div class="tool"></div>
+
+        <span class="node n1"></span>
+        <span class="node n2"></span>
+        <span class="node n3"></span>
+        <span class="node n4"></span>
+        <span class="node n5"></span>
+
+        <div class="status-dots"><span></span><span></span><span></span></div>
+        <div class="cursor-shadow"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const workspace = document.querySelector(".workspace");
+      const shadow = document.querySelector(".cursor-shadow");
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      function updatePointer(event) {
+        if (reduceMotion.matches) return;
+
+        const rect = workspace.getBoundingClientRect();
+        const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+        const y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+        const nx = (x / rect.width - 0.5) * 2;
+        const ny = (y / rect.height - 0.5) * 2;
+
+        workspace.style.transform =
+          `rotateX(${ny * -1.8}deg) rotateY(${nx * 2.2}deg)`;
+
+        shadow.style.left = `${x}px`;
+        shadow.style.top = `${y - rect.height * 0.09}px`;
+      }
+
+      function resetPointer() {
+        workspace.style.transform = "rotateX(0deg) rotateY(0deg)";
+        shadow.style.left = "50%";
+        shadow.style.top = "50%";
+      }
+
+      window.addEventListener("pointermove", updatePointer, { passive: true });
+      window.addEventListener("pointerleave", resetPointer, { passive: true });
+
+      document.addEventListener("visibilitychange", () => {
+        const animations = document.getAnimations();
+        animations.forEach(animation => {
+          if (document.hidden) animation.pause();
+          else animation.play();
+        });
+      });
+
+      resetPointer();
+    })();
+  </script>
+</body>
+</html>
