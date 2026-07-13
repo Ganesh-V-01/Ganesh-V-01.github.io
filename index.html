@@ -3,745 +3,659 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f5f7fa">
-  <meta name="description" content="ganeshv.me is currently being designed and built.">
+  <meta name="theme-color" content="#f2f0ea">
+  <meta name="description" content="ganeshv.me">
   <title>ganeshv.me</title>
 
   <style>
-    :root {
-      --page: #f5f7fa;
-      --paper: #ffffff;
-      --ink: #1f2937;
-      --muted: #8b96a7;
-      --line: #dce2e9;
-      --line-soft: #e9edf2;
-      --blue: #4f7cff;
-      --blue-soft: #dfe7ff;
-      --shadow: 0 24px 70px rgba(31, 41, 55, 0.11);
-      --radius: 28px;
+    :root{
+      --paper:#f2f0ea;
+      --white:#fffef9;
+      --ink:#111318;
+      --soft:#cfd4db;
+      --blue:#2457ff;
+      --blue-soft:#dce4ff;
+      --cycle:18s;
     }
 
-    * {
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+
+    html,body{
+      width:100%;
+      height:100%;
+      margin:0;
+      overflow:hidden;
+      background:var(--paper);
     }
 
-    html,
-    body {
-      width: 100%;
-      min-height: 100%;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    body {
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
+    body{
+      min-height:100svh;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--ink);
       background:
-        linear-gradient(rgba(79,124,255,.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(79,124,255,.035) 1px, transparent 1px),
-        var(--page);
-      background-size: 32px 32px;
-      font-family: Arial, Helvetica, sans-serif;
-      color: var(--ink);
+        linear-gradient(rgba(17,19,24,.045) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(17,19,24,.045) 1px,transparent 1px),
+        var(--paper);
+      background-size:40px 40px;
     }
 
-    .scene {
-      position: relative;
-      width: min(92vw, 1040px);
-      height: min(84svh, 720px);
-      display: grid;
-      place-items: center;
-      perspective: 1200px;
-      isolation: isolate;
+    .experience{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      isolation:isolate;
     }
 
-    .scene::before {
-      content: "";
-      position: absolute;
-      width: 68%;
-      height: 36%;
-      left: 50%;
-      bottom: 6%;
-      transform: translateX(-50%);
-      background: radial-gradient(ellipse, rgba(31,41,55,.12), transparent 70%);
-      filter: blur(22px);
-      z-index: -1;
+    .experience::before{
+      content:"";
+      position:absolute;
+      width:min(78vw,920px);
+      aspect-ratio:1;
+      border-radius:50%;
+      border:1px solid rgba(17,19,24,.08);
+      transform:scale(.9);
+      animation:breath 9s ease-in-out infinite;
     }
 
-    .workspace {
-      position: relative;
-      width: min(84vw, 820px);
-      aspect-ratio: 1.52 / 1;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.94);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      transform-style: preserve-3d;
-      transition: transform .2s ease-out;
+    .experience::after{
+      content:"";
+      position:absolute;
+      width:min(58vw,700px);
+      aspect-ratio:1;
+      border-radius:50%;
+      border:1px dashed rgba(36,87,255,.18);
+      animation:orbit 28s linear infinite;
     }
 
-    .topbar {
-      height: 12%;
-      display: flex;
-      align-items: center;
-      padding: 0 4.5%;
-      border-bottom: 1px solid var(--line-soft);
-      background: rgba(255,255,255,.94);
+    .scene{
+      position:relative;
+      width:min(92vw,1120px);
+      height:min(88svh,760px);
+      transform-style:preserve-3d;
+      perspective:1400px;
     }
 
-    .window-dots {
-      display: flex;
-      gap: 8px;
+    .axis{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:1px;
+      height:78%;
+      transform:translate(-50%,-50%);
+      background:linear-gradient(transparent,rgba(17,19,24,.15),transparent);
     }
 
-    .window-dots span {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #c8d0da;
+    .axis.horizontal{
+      width:82%;
+      height:1px;
     }
 
-    .address {
-      width: 36%;
-      height: 10px;
-      margin-left: auto;
-      margin-right: auto;
-      border-radius: 999px;
-      background: #edf1f5;
+    .core{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:min(46vw,470px);
+      aspect-ratio:1.18/1;
+      transform:translate(-50%,-50%) rotateX(0deg) rotateY(0deg);
+      transform-style:preserve-3d;
+      transition:transform .2s ease-out;
     }
 
-    .canvas {
-      position: relative;
-      height: 88%;
-      overflow: hidden;
+    .core-shadow{
+      position:absolute;
+      left:50%;
+      top:63%;
+      width:72%;
+      height:19%;
+      transform:translate(-50%,-50%);
+      border-radius:50%;
+      background:rgba(17,19,24,.16);
+      filter:blur(24px);
+      animation:shadowPulse 6s ease-in-out infinite;
     }
 
-    .design-grid {
-      position: absolute;
-      inset: 0;
-      opacity: .55;
-      background:
-        linear-gradient(var(--line-soft) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-      background-size: 7.8% 12%;
-      mask-image: linear-gradient(to bottom, black 0 82%, transparent 100%);
+    .frame{
+      position:absolute;
+      inset:0;
+      border:2px solid var(--ink);
+      background:rgba(255,254,249,.92);
+      box-shadow:
+        16px 16px 0 rgba(17,19,24,.08),
+        0 26px 60px rgba(17,19,24,.14);
+      overflow:hidden;
+      clip-path:polygon(7% 0,100% 0,100% 87%,93% 100%,0 100%,0 13%);
+      animation:frameShift var(--cycle) cubic-bezier(.65,0,.35,1) infinite;
     }
 
-    .frame {
-      position: absolute;
-      left: 12%;
-      top: 14%;
-      width: 76%;
-      height: 66%;
-      border: 1px dashed #cbd3dd;
-      border-radius: 18px;
-      animation: framePulse 18s ease-in-out infinite;
+    .frame::before{
+      content:"";
+      position:absolute;
+      inset:9%;
+      border:1px dashed rgba(17,19,24,.28);
     }
 
-    .measure-h,
-    .measure-v {
-      position: absolute;
-      opacity: .7;
+    .frame::after{
+      content:"";
+      position:absolute;
+      left:-30%;
+      top:48%;
+      width:160%;
+      height:2px;
+      background:linear-gradient(90deg,transparent,var(--blue),transparent);
+      box-shadow:0 0 16px rgba(36,87,255,.42);
+      opacity:0;
+      animation:scan var(--cycle) ease-in-out infinite;
     }
 
-    .measure-h {
-      left: 12%;
-      top: 8%;
-      width: 76%;
-      height: 12px;
-      border-top: 1px solid #cfd6df;
+    .wordmark{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      z-index:6;
+      pointer-events:none;
     }
 
-    .measure-v {
-      left: 7%;
-      top: 14%;
-      width: 12px;
-      height: 66%;
-      border-left: 1px solid #cfd6df;
+    .wordmark h1{
+      margin:0;
+      font-size:clamp(2.2rem,7vw,6.3rem);
+      line-height:.86;
+      letter-spacing:-.07em;
+      font-weight:900;
+      text-transform:uppercase;
+      transform:scaleX(.92);
     }
 
-    .measure-h::before,
-    .measure-h::after,
-    .measure-v::before,
-    .measure-v::after {
-      content: "";
-      position: absolute;
-      background: #cfd6df;
+    .wordmark h1 span{
+      display:block;
     }
 
-    .measure-h::before,
-    .measure-h::after {
-      width: 1px;
-      height: 8px;
-      top: -4px;
+    .wordmark h1 span:last-child{
+      color:var(--blue);
+      transform:translateX(.16em);
     }
 
-    .measure-h::before { left: 0; }
-    .measure-h::after { right: 0; }
-
-    .measure-v::before,
-    .measure-v::after {
-      width: 8px;
-      height: 1px;
-      left: -4px;
+    .panel{
+      position:absolute;
+      border:2px solid var(--ink);
+      background:var(--white);
+      box-shadow:7px 7px 0 rgba(17,19,24,.09);
+      z-index:4;
+      opacity:0;
     }
 
-    .measure-v::before { top: 0; }
-    .measure-v::after { bottom: 0; }
-
-    .module {
-      position: absolute;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--paper);
-      box-shadow: 0 8px 20px rgba(31,41,55,.06);
-      opacity: 0;
-      transform: translateY(24px) scale(.96);
-      animation: assemble 18s cubic-bezier(.2,.75,.25,1) infinite;
+    .panel::before,
+    .panel::after{
+      content:"";
+      position:absolute;
+      border-radius:999px;
+      background:var(--ink);
     }
 
-    .module::before,
-    .module::after {
-      content: "";
-      position: absolute;
-      left: 12%;
-      border-radius: 999px;
-      background: #dfe4ea;
+    .panel::before{
+      left:14%;
+      top:22%;
+      width:40%;
+      height:7px;
     }
 
-    .module::before {
-      top: 20%;
-      width: 48%;
-      height: 8px;
+    .panel::after{
+      left:14%;
+      top:49%;
+      width:66%;
+      height:5px;
+      background:#aeb6c2;
     }
 
-    .module::after {
-      top: 43%;
-      width: 68%;
-      height: 6px;
+    .p1{
+      width:32%;
+      height:23%;
+      left:8%;
+      top:10%;
+      animation:panelOne var(--cycle) cubic-bezier(.2,.8,.25,1) infinite;
     }
 
-    .hero {
-      left: 17%;
-      top: 21%;
-      width: 42%;
-      height: 22%;
-      animation-delay: .8s;
+    .p2{
+      width:26%;
+      height:30%;
+      right:8%;
+      top:12%;
+      animation:panelTwo var(--cycle) cubic-bezier(.2,.8,.25,1) infinite;
     }
 
-    .hero .accent {
-      position: absolute;
-      left: 12%;
-      bottom: 16%;
-      width: 34%;
-      height: 11px;
-      border-radius: 999px;
-      background: var(--blue);
-      box-shadow: 0 0 0 5px var(--blue-soft);
+    .p2::before{
+      width:34%;
+      height:34%;
+      border-radius:50%;
+      background:var(--blue-soft);
+      border:2px solid var(--blue);
     }
 
-    .image-card {
-      right: 17%;
-      top: 21%;
-      width: 18%;
-      height: 22%;
-      animation-delay: 1.7s;
-      overflow: hidden;
+    .p3{
+      width:37%;
+      height:21%;
+      left:9%;
+      bottom:10%;
+      animation:panelThree var(--cycle) cubic-bezier(.2,.8,.25,1) infinite;
     }
 
-    .image-card::before {
-      left: 17%;
-      top: 18%;
-      width: 66%;
-      height: 46%;
-      border-radius: 10px;
-      background:
-        linear-gradient(135deg, #e7ecf2 50%, #dce4ec 50%);
+    .p4{
+      width:31%;
+      height:22%;
+      right:9%;
+      bottom:10%;
+      animation:panelFour var(--cycle) cubic-bezier(.2,.8,.25,1) infinite;
     }
 
-    .image-card::after {
-      left: 17%;
-      top: auto;
-      bottom: 15%;
-      width: 45%;
-      height: 6px;
+    .p4::before{
+      width:18%;
+      height:18%;
+      border-radius:2px;
+      background:var(--blue);
     }
 
-    .left-card {
-      left: 17%;
-      top: 51%;
-      width: 28%;
-      height: 20%;
-      animation-delay: 2.6s;
+    .track{
+      position:absolute;
+      border:1px dashed rgba(17,19,24,.28);
+      border-radius:50%;
+      pointer-events:none;
     }
 
-    .center-card {
-      left: 48%;
-      top: 51%;
-      width: 19%;
-      height: 20%;
-      animation-delay: 3.4s;
+    .track.one{
+      width:132%;
+      height:132%;
+      left:-16%;
+      top:-16%;
+      animation:orbit 22s linear infinite;
     }
 
-    .right-card {
-      right: 17%;
-      top: 51%;
-      width: 13%;
-      height: 20%;
-      animation-delay: 4.2s;
+    .track.two{
+      width:158%;
+      height:90%;
+      left:-29%;
+      top:5%;
+      transform:rotate(-13deg);
+      border-color:rgba(36,87,255,.18);
+      animation:orbitReverse 26s linear infinite;
     }
 
-    .right-card::before {
-      width: 30%;
-      height: 30%;
-      top: 18%;
-      left: 35%;
-      border-radius: 50%;
-      background: var(--blue-soft);
-      border: 1px solid #c9d6ff;
+    .node{
+      position:absolute;
+      width:16px;
+      height:16px;
+      border:2px solid var(--ink);
+      background:var(--white);
+      z-index:7;
+      box-shadow:4px 4px 0 rgba(17,19,24,.09);
     }
 
-    .right-card::after {
-      width: 54%;
-      left: 23%;
-      top: auto;
-      bottom: 18%;
+    .n1{left:-8%;top:12%;animation:nodeOne var(--cycle) ease-in-out infinite}
+    .n2{right:-7%;top:27%;animation:nodeTwo var(--cycle) ease-in-out infinite}
+    .n3{left:8%;bottom:-8%;animation:nodeThree var(--cycle) ease-in-out infinite}
+    .n4{right:13%;bottom:-8%;animation:nodeFour var(--cycle) ease-in-out infinite}
+
+    .cursor{
+      position:absolute;
+      z-index:12;
+      width:54px;
+      height:54px;
+      border:2px solid var(--ink);
+      border-radius:50%;
+      background:var(--white);
+      box-shadow:8px 8px 0 rgba(17,19,24,.12);
+      animation:cursorPath var(--cycle) cubic-bezier(.65,0,.35,1) infinite;
     }
 
-    .tool {
-      position: absolute;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: 1px solid #cad2dc;
-      background: #fff;
-      box-shadow: 0 10px 24px rgba(31,41,55,.10);
-      z-index: 8;
-      animation: toolMove 18s cubic-bezier(.65,0,.35,1) infinite;
+    .cursor::before{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:17px;
+      height:17px;
+      transform:translate(-52%,-52%) rotate(45deg);
+      border-right:4px solid var(--blue);
+      border-bottom:4px solid var(--blue);
     }
 
-    .tool::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 13px;
-      height: 13px;
-      transform: translate(-50%,-50%) rotate(45deg);
-      border-right: 2px solid var(--blue);
-      border-bottom: 2px solid var(--blue);
+    .cursor::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:110px;
+      height:2px;
+      transform-origin:left center;
+      background:linear-gradient(90deg,var(--blue),transparent);
+      animation:cursorGuide var(--cycle) ease-in-out infinite;
     }
 
-    .tool::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 74px;
-      height: 1px;
-      transform-origin: left center;
-      background: linear-gradient(90deg, rgba(79,124,255,.55), transparent);
-      animation: guideRotate 18s ease-in-out infinite;
+    .piece{
+      position:absolute;
+      width:76px;
+      height:52px;
+      border:2px solid var(--ink);
+      background:var(--blue);
+      box-shadow:7px 7px 0 rgba(17,19,24,.10);
+      z-index:3;
     }
 
-    .scan {
-      position: absolute;
-      left: 12%;
-      top: 14%;
-      width: 76%;
-      height: 2px;
-      opacity: 0;
-      z-index: 7;
-      background: linear-gradient(90deg, transparent, var(--blue), transparent);
-      box-shadow: 0 0 12px rgba(79,124,255,.28);
-      animation: scanPass 18s ease-in-out infinite;
+    .piece.a{left:2%;top:8%;animation:pieceA var(--cycle) cubic-bezier(.65,0,.35,1) infinite}
+    .piece.b{right:3%;top:12%;animation:pieceB var(--cycle) cubic-bezier(.65,0,.35,1) infinite}
+    .piece.c{left:6%;bottom:9%;animation:pieceC var(--cycle) cubic-bezier(.65,0,.35,1) infinite}
+    .piece.d{right:8%;bottom:7%;animation:pieceD var(--cycle) cubic-bezier(.65,0,.35,1) infinite}
+
+    .ruler{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:64%;
+      height:64%;
+      transform:translate(-50%,-50%);
+      pointer-events:none;
+      opacity:.32;
     }
 
-    .node {
-      position: absolute;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #fff;
-      border: 1px solid #bfc8d4;
-      z-index: 9;
-      animation: nodePulse 18s ease-in-out infinite;
+    .ruler::before,
+    .ruler::after{
+      content:"";
+      position:absolute;
+      background:repeating-linear-gradient(
+        90deg,
+        var(--ink) 0 1px,
+        transparent 1px 20px
+      );
     }
 
-    .n1 { left: 12%; top: 14%; }
-    .n2 { right: 12%; top: 14%; animation-delay: .4s; }
-    .n3 { left: 12%; bottom: 20%; animation-delay: .8s; }
-    .n4 { right: 12%; bottom: 20%; animation-delay: 1.2s; }
-    .n5 { left: 49%; top: 47%; animation-delay: 1.6s; }
-
-    .reject {
-      position: absolute;
-      right: 16%;
-      top: 50%;
-      width: 14%;
-      height: 21%;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: #fff;
-      opacity: 0;
-      box-shadow: 0 8px 20px rgba(31,41,55,.05);
-      animation: rejectModule 18s ease-in-out infinite;
+    .ruler::before{
+      left:0;
+      right:0;
+      top:-28px;
+      height:9px;
     }
 
-    .reject::before,
-    .reject::after {
-      content: "";
-      position: absolute;
-      left: 16%;
-      border-radius: 999px;
-      background: #dfe4ea;
+    .ruler::after{
+      left:0;
+      right:0;
+      bottom:-28px;
+      height:9px;
     }
 
-    .reject::before {
-      top: 22%;
-      width: 50%;
-      height: 7px;
+    .pointer-light{
+      position:absolute;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      pointer-events:none;
+      background:radial-gradient(circle,rgba(36,87,255,.12),transparent 68%);
+      transform:translate(-50%,-50%);
+      transition:left .12s linear,top .12s linear;
     }
 
-    .reject::after {
-      top: 45%;
-      width: 66%;
-      height: 6px;
+    @keyframes panelOne{
+      0%,8%{opacity:0;transform:translate(-130%,-75%) rotate(-8deg)}
+      17%,66%{opacity:1;transform:translate(0,0) rotate(0)}
+      76%{opacity:1;transform:translate(4%,-4%) rotate(2deg)}
+      86%,100%{opacity:0;transform:translate(-115%,-65%) rotate(-8deg)}
     }
 
-    .cursor-shadow {
-      position: absolute;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 2;
-      background: radial-gradient(circle, rgba(79,124,255,.08), transparent 70%);
-      transform: translate(-50%,-50%);
-      transition: left .12s linear, top .12s linear;
+    @keyframes panelTwo{
+      0%,16%{opacity:0;transform:translate(135%,-55%) rotate(9deg)}
+      26%,68%{opacity:1;transform:translate(0,0) rotate(0)}
+      80%{opacity:1;transform:translate(-5%,4%) rotate(-2deg)}
+      90%,100%{opacity:0;transform:translate(120%,-45%) rotate(8deg)}
     }
 
-    .status-dots {
-      position: absolute;
-      left: 50%;
-      bottom: 7%;
-      display: flex;
-      gap: 8px;
-      transform: translateX(-50%);
+    @keyframes panelThree{
+      0%,24%{opacity:0;transform:translate(-135%,80%) rotate(7deg)}
+      34%,70%{opacity:1;transform:translate(0,0) rotate(0)}
+      82%{opacity:1;transform:translate(6%,-4%) rotate(-2deg)}
+      92%,100%{opacity:0;transform:translate(-120%,70%) rotate(7deg)}
     }
 
-    .status-dots span {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #cbd3dd;
-      animation: dotFlow 2.4s ease-in-out infinite;
+    @keyframes panelFour{
+      0%,32%{opacity:0;transform:translate(135%,85%) rotate(-8deg)}
+      42%,72%{opacity:1;transform:translate(0,0) rotate(0)}
+      77%{opacity:1;transform:translate(0,0) rotate(0)}
+      86%{opacity:.7;transform:translate(48%,-26%) rotate(7deg)}
+      95%,100%{opacity:0;transform:translate(135%,75%) rotate(-8deg)}
     }
 
-    .status-dots span:nth-child(2) { animation-delay: .25s; }
-    .status-dots span:nth-child(3) { animation-delay: .5s; }
-
-    @keyframes assemble {
-      0%, 10% {
-        opacity: 0;
-        transform: translateY(24px) scale(.96);
-      }
-      18%, 68% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-      78%, 100% {
-        opacity: .22;
-        transform: translateY(0) scale(.985);
-      }
+    @keyframes cursorPath{
+      0%{left:2%;top:3%}
+      14%{left:27%;top:19%}
+      28%{left:70%;top:17%}
+      42%{left:24%;top:64%}
+      56%{left:67%;top:65%}
+      69%{left:79%;top:54%}
+      82%{left:48%;top:39%}
+      92%{left:15%;top:75%}
+      100%{left:2%;top:3%}
     }
 
-    @keyframes framePulse {
-      0%, 7% { opacity: .25; transform: scale(.985); }
-      16%, 76% { opacity: 1; transform: scale(1); }
-      88%, 100% { opacity: .34; transform: scale(.985); }
+    @keyframes cursorGuide{
+      0%,100%{transform:translateY(-50%) rotate(18deg)}
+      25%{transform:translateY(-50%) rotate(126deg)}
+      50%{transform:translateY(-50%) rotate(214deg)}
+      75%{transform:translateY(-50%) rotate(308deg)}
     }
 
-    @keyframes toolMove {
-      0%   { left: 13%; top: 17%; transform: rotate(0deg); }
-      14%  { left: 54%; top: 24%; transform: rotate(8deg); }
-      28%  { left: 75%; top: 31%; transform: rotate(-6deg); }
-      42%  { left: 38%; top: 58%; transform: rotate(5deg); }
-      56%  { left: 63%; top: 61%; transform: rotate(-4deg); }
-      70%  { left: 78%; top: 56%; transform: rotate(10deg); }
-      84%  { left: 49%; top: 36%; transform: rotate(0deg); }
-      100% { left: 13%; top: 17%; transform: rotate(0deg); }
+    @keyframes pieceA{
+      0%,10%{transform:translate(0,0) rotate(-8deg)}
+      20%,72%{transform:translate(335%,145%) rotate(0)}
+      82%,100%{transform:translate(0,0) rotate(-8deg)}
     }
 
-    @keyframes guideRotate {
-      0%, 100% { transform: translateY(-50%) rotate(18deg); opacity: .55; }
-      28% { transform: translateY(-50%) rotate(128deg); opacity: .25; }
-      56% { transform: translateY(-50%) rotate(208deg); opacity: .55; }
-      84% { transform: translateY(-50%) rotate(318deg); opacity: .25; }
+    @keyframes pieceB{
+      0%,18%{transform:translate(0,0) rotate(7deg)}
+      30%,73%{transform:translate(-300%,145%) rotate(0)}
+      84%,100%{transform:translate(0,0) rotate(7deg)}
     }
 
-    @keyframes scanPass {
-      0%, 50% { opacity: 0; transform: translateY(0); }
-      56% { opacity: 1; }
-      72% { opacity: .8; transform: translateY(260px); }
-      76%, 100% { opacity: 0; transform: translateY(260px); }
+    @keyframes pieceC{
+      0%,28%{transform:translate(0,0) rotate(6deg)}
+      40%,74%{transform:translate(315%,-150%) rotate(0)}
+      86%,100%{transform:translate(0,0) rotate(6deg)}
     }
 
-    @keyframes rejectModule {
-      0%, 54% {
-        opacity: 0;
-        transform: translate(0, 18px) rotate(0);
-      }
-      60%, 69% {
-        opacity: 1;
-        transform: translate(0, 0) rotate(0);
-      }
-      76%, 86% {
-        opacity: .7;
-        transform: translate(90px, -34px) rotate(8deg);
-      }
-      90%, 100% {
-        opacity: 0;
-        transform: translate(120px, -46px) rotate(12deg);
-      }
+    @keyframes pieceD{
+      0%,38%{transform:translate(0,0) rotate(-7deg)}
+      50%,76%{transform:translate(-275%,-150%) rotate(0)}
+      86%{transform:translate(-210%,-185%) rotate(9deg)}
+      96%,100%{transform:translate(0,0) rotate(-7deg)}
     }
 
-    @keyframes nodePulse {
-      0%, 100% {
-        box-shadow: 0 0 0 0 rgba(79,124,255,0);
-        border-color: #bfc8d4;
-      }
-      45% {
-        box-shadow: 0 0 0 7px rgba(79,124,255,.08);
-        border-color: var(--blue);
-      }
+    @keyframes nodeOne{
+      0%,100%{transform:translate(0,0)}
+      50%{transform:translate(40px,22px)}
     }
 
-    @keyframes dotFlow {
-      0%, 100% { transform: translateY(0); background: #cbd3dd; }
-      50% { transform: translateY(-4px); background: var(--blue); }
+    @keyframes nodeTwo{
+      0%,100%{transform:translate(0,0)}
+      50%{transform:translate(-34px,24px)}
     }
 
-    @media (max-width: 700px) {
-      body {
-        background-size: 24px 24px;
-      }
+    @keyframes nodeThree{
+      0%,100%{transform:translate(0,0)}
+      50%{transform:translate(28px,-34px)}
+    }
 
-      .scene {
-        width: 100vw;
-        height: 100svh;
-      }
+    @keyframes nodeFour{
+      0%,100%{transform:translate(0,0)}
+      50%{transform:translate(-25px,-36px)}
+    }
 
-      .workspace {
-        width: 92vw;
-        aspect-ratio: .82 / 1;
-        border-radius: 22px;
+    @keyframes scan{
+      0%,57%{opacity:0;transform:translateY(-170px)}
+      63%{opacity:1}
+      74%{opacity:.9;transform:translateY(170px)}
+      79%,100%{opacity:0;transform:translateY(170px)}
+    }
+
+    @keyframes frameShift{
+      0%,100%{transform:translate(0,0) skew(0deg)}
+      40%{transform:translate(0,0) skew(0deg)}
+      73%{transform:translate(-3px,2px) skew(-.4deg)}
+      80%{transform:translate(3px,-2px) skew(.4deg)}
+      88%{transform:translate(0,0) skew(0deg)}
+    }
+
+    @keyframes breath{
+      0%,100%{transform:scale(.92)}
+      50%{transform:scale(1)}
+    }
+
+    @keyframes orbit{
+      to{transform:rotate(360deg)}
+    }
+
+    @keyframes orbitReverse{
+      from{transform:rotate(-13deg)}
+      to{transform:rotate(-373deg)}
+    }
+
+    @keyframes shadowPulse{
+      0%,100%{transform:translate(-50%,-50%) scale(.9);opacity:.65}
+      50%{transform:translate(-50%,-50%) scale(1.05);opacity:1}
+    }
+
+    @media(max-width:720px){
+      body{background-size:28px 28px}
+
+      .scene{
+        width:100vw;
+        height:100svh;
       }
 
-      .topbar {
-        height: 9%;
+      .core{
+        width:78vw;
       }
 
-      .canvas {
-        height: 91%;
+      .wordmark h1{
+        font-size:clamp(2.7rem,15vw,5.2rem);
       }
 
-      .frame {
-        left: 10%;
-        top: 11%;
-        width: 80%;
-        height: 72%;
+      .cursor{
+        width:46px;
+        height:46px;
       }
 
-      .measure-h {
-        left: 10%;
-        top: 6%;
-        width: 80%;
+      .piece{
+        width:54px;
+        height:38px;
       }
 
-      .measure-v {
-        left: 5%;
-        top: 11%;
-        height: 72%;
+      .experience::before{
+        width:96vw;
       }
 
-      .hero {
-        left: 15%;
-        top: 17%;
-        width: 70%;
-        height: 18%;
-      }
-
-      .image-card {
-        left: 15%;
-        right: auto;
-        top: 40%;
-        width: 31%;
-        height: 19%;
-      }
-
-      .left-card {
-        left: 51%;
-        top: 40%;
-        width: 34%;
-        height: 19%;
-      }
-
-      .center-card {
-        left: 15%;
-        top: 64%;
-        width: 34%;
-        height: 14%;
-      }
-
-      .right-card {
-        right: 15%;
-        top: 64%;
-        width: 31%;
-        height: 14%;
-      }
-
-      .reject {
-        right: 15%;
-        top: 64%;
-        width: 31%;
-        height: 14%;
-      }
-
-      .tool {
-        width: 36px;
-        height: 36px;
-      }
-
-      .scan {
-        left: 10%;
-        top: 11%;
-        width: 80%;
-      }
-
-      @keyframes toolMove {
-        0%   { left: 12%; top: 14%; }
-        18%  { left: 62%; top: 18%; }
-        36%  { left: 23%; top: 44%; }
-        54%  { left: 62%; top: 46%; }
-        72%  { left: 22%; top: 68%; }
-        88%  { left: 62%; top: 68%; }
-        100% { left: 12%; top: 14%; }
-      }
-
-      @keyframes scanPass {
-        0%, 50% { opacity: 0; transform: translateY(0); }
-        56% { opacity: 1; }
-        72% { opacity: .8; transform: translateY(420px); }
-        76%, 100% { opacity: 0; transform: translateY(420px); }
+      .experience::after{
+        width:82vw;
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 1ms !important;
-        animation-iteration-count: 1 !important;
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{
+        animation-duration:1ms!important;
+        animation-iteration-count:1!important;
       }
 
-      .module,
-      .reject {
-        opacity: 1;
-        transform: none;
+      .panel{
+        opacity:1;
+        transform:none;
       }
 
-      .reject {
-        display: none;
-      }
-
-      .scan,
-      .tool::after,
-      .status-dots {
-        display: none;
+      .cursor::after,
+      .frame::after{
+        display:none;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="scene" aria-label="A clean digital workspace showing a website being assembled">
-    <section class="workspace" aria-hidden="true">
-      <div class="topbar">
-        <div class="window-dots"><span></span><span></span><span></span></div>
-        <div class="address"></div>
-      </div>
+  <main class="experience" aria-label="An abstract digital structure continuously assembling around the words In Motion">
+    <section class="scene" aria-hidden="true">
+      <div class="axis"></div>
+      <div class="axis horizontal"></div>
 
-      <div class="canvas">
-        <div class="design-grid"></div>
-        <div class="measure-h"></div>
-        <div class="measure-v"></div>
-        <div class="frame"></div>
+      <div class="piece a"></div>
+      <div class="piece b"></div>
+      <div class="piece c"></div>
+      <div class="piece d"></div>
 
-        <div class="module hero"><span class="accent"></span></div>
-        <div class="module image-card"></div>
-        <div class="module left-card"></div>
-        <div class="module center-card"></div>
-        <div class="module right-card"></div>
+      <div class="core-shadow"></div>
 
-        <div class="reject"></div>
-        <div class="scan"></div>
-        <div class="tool"></div>
+      <div class="core">
+        <div class="track one"></div>
+        <div class="track two"></div>
+        <div class="ruler"></div>
+
+        <div class="frame">
+          <div class="panel p1"></div>
+          <div class="panel p2"></div>
+          <div class="panel p3"></div>
+          <div class="panel p4"></div>
+
+          <div class="wordmark">
+            <h1><span>In</span><span>Motion</span></h1>
+          </div>
+        </div>
 
         <span class="node n1"></span>
         <span class="node n2"></span>
         <span class="node n3"></span>
         <span class="node n4"></span>
-        <span class="node n5"></span>
 
-        <div class="status-dots"><span></span><span></span><span></span></div>
-        <div class="cursor-shadow"></div>
+        <div class="cursor"></div>
       </div>
+
+      <div class="pointer-light"></div>
     </section>
   </main>
 
   <script>
     (() => {
-      const workspace = document.querySelector(".workspace");
-      const shadow = document.querySelector(".cursor-shadow");
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const core = document.querySelector(".core");
+      const scene = document.querySelector(".scene");
+      const light = document.querySelector(".pointer-light");
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
-      function updatePointer(event) {
-        if (reduceMotion.matches) return;
+      function move(event){
+        if(reduceMotion.matches) return;
 
-        const rect = workspace.getBoundingClientRect();
-        const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
-        const y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
-        const nx = (x / rect.width - 0.5) * 2;
-        const ny = (y / rect.height - 0.5) * 2;
+        const rect = scene.getBoundingClientRect();
+        const x = Math.max(0,Math.min(rect.width,event.clientX-rect.left));
+        const y = Math.max(0,Math.min(rect.height,event.clientY-rect.top));
+        const nx = (x/rect.width-.5)*2;
+        const ny = (y/rect.height-.5)*2;
 
-        workspace.style.transform =
-          `rotateX(${ny * -1.8}deg) rotateY(${nx * 2.2}deg)`;
+        core.style.transform =
+          `translate(-50%,-50%) rotateX(${ny*-3}deg) rotateY(${nx*4}deg)`;
 
-        shadow.style.left = `${x}px`;
-        shadow.style.top = `${y - rect.height * 0.09}px`;
+        light.style.left = `${x}px`;
+        light.style.top = `${y}px`;
       }
 
-      function resetPointer() {
-        workspace.style.transform = "rotateX(0deg) rotateY(0deg)";
-        shadow.style.left = "50%";
-        shadow.style.top = "50%";
+      function reset(){
+        core.style.transform="translate(-50%,-50%) rotateX(0deg) rotateY(0deg)";
+        light.style.left="50%";
+        light.style.top="50%";
       }
 
-      window.addEventListener("pointermove", updatePointer, { passive: true });
-      window.addEventListener("pointerleave", resetPointer, { passive: true });
+      addEventListener("pointermove",move,{passive:true});
+      addEventListener("pointerleave",reset,{passive:true});
 
-      document.addEventListener("visibilitychange", () => {
-        const animations = document.getAnimations();
-        animations.forEach(animation => {
-          if (document.hidden) animation.pause();
+      document.addEventListener("visibilitychange",()=>{
+        document.getAnimations().forEach(animation=>{
+          if(document.hidden) animation.pause();
           else animation.play();
         });
       });
 
-      resetPointer();
+      reset();
     })();
   </script>
 </body>
